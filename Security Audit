@@ -1,0 +1,51 @@
+#build a python  include conducting security audits 
+#of systems and applications
+
+#!/usr/bin/env python
+
+import os
+import sys
+import subprocess
+
+def main():
+
+    # Define path to nmap
+    nmapPath = "/usr/bin/nmap"
+
+    # Define list of ports to scan
+    ports = [22, 80, 443, 3306, 8080]
+
+    # Get target from user
+    target = input("Enter a target to scan: ")
+
+    # Run nmap scan
+    for port in ports:
+        cmd = os.system("ping " + target)
+
+        # Check results of scan
+        if cmd == 0:
+            print("Port " + str(port) + " is open")
+            #ask for permission to scan more ports
+            if port == 22:
+                print("Would you like to scan more ports? (y/n)")
+                answer = input()
+                if answer == "y":
+                    print("Enter port to scan: ")
+                    port = input()
+                    cmd = os.system("ping " + target)
+                    if cmd == 0:
+                        print("Port " + str(port) + " is open")
+                    else:
+                        print("Port " + str(port) + " is closed")
+                else:
+                    print("Exiting...")
+                    sys.exit()
+                    
+        else:
+            print("Port " + str(port) + " is closed")
+    #make this a bot
+    #make this a bot
+
+
+if __name__ == "__main__":
+    main()
