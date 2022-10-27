@@ -9,6 +9,7 @@ def change_ip():
     print("eth0 down")
     time.sleep(3)
     os.system("ipconfig /renew")
+    os.system("ipconfig /flushdns")
     print('waiting...')
     time.sleep(3)
     print("mac changed")
