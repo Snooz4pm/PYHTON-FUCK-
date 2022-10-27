@@ -1,12 +1,12 @@
 import socket
 import subprocess
-search = input("Enter you host ip addresse: ")
+search = input("Enter your target ip addresse: ")
 
 def main():
 
-    print("Scanning host: " + search)
+    print("Scanning target...>>>" + search)
     host = search
-    port = int(input("Enter port number: "))
+    port = int(input("Enter port number>>> "))
 
     s = socket.socket()
     s.connect((host, port))
