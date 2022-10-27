@@ -1,16 +1,26 @@
-
-
 import os
 import time
 
 def change_ip():
     os.system("ipconfig eth0 down")
+    time.sleep(3)
+    print("closing eth0...")
+    time.sleep(3)
     print("eth0 down")
+    time.sleep(3)
     os.system("ipconfig /renew")
+    print('waiting...')
+    time.sleep(3)
     print("mac changed")
     os.system("ipconfig eth0 up")
     print("eth0 up")
     time.sleep(2)
     print("IP address changed successfully")
+    print('thanks for using this script')
+    time.sleep(2)
+    print('exiting...')
+    time.sleep(2)
+    exit()
+
 
 change_ip()
