@@ -1,0 +1,66 @@
+import sys
+
+# Check usage
+
+
+# Open file
+code=input('Enter the code: ')
+
+# Initialize variables
+code_ptr = 0
+data_ptr = 0
+data = [0]
+
+# Run interpreter
+while code_ptr < len(code):
+    cmd = code
+    if cmd == '>':
+        
+        data_ptr += 1
+        if data_ptr == len(data):
+            data.append(0)
+    elif cmd == '<':
+        data_ptr -= 1
+        if data_ptr < 0:
+            print('Error: data pointer out of bounds')
+            sys.exit(1)
+    elif cmd == '+':
+        data[data_ptr] += 1
+    elif cmd == '-':
+        data[data_ptr] -= 1
+    elif cmd == '.':
+        sys.stdout.write(chr(data[data_ptr]))
+    elif cmd == ',':
+        data[data_ptr] = ord(sys.stdin.read(1))
+    elif cmd == '[':
+        if data[data_ptr] == 0:
+            code_ptr += 1
+            while code[code_ptr] != ']':
+                code_ptr += 1
+    elif cmd == ']':
+        if data[data_ptr] != 0:
+            code_ptr -= 1
+            while code[code_ptr] != '[':
+                code_ptr -= 1
+    else:
+        print('Error: unknown command {}'.format(cmd))
+        sys.exit(1)
+
+    code_ptr += 1
+    #this code is a brainfuck interpreter
+#what it can do is it can read brainfuck code and execute it
+#brainfuck is a very simple programming language
+#it has 8 commands
+#> < + - . , [ ]
+#> means to move the data pointer to the right
+#< means to move the data pointer to the left
+#+ means to increment the byte at the data pointer
+#- means to decrement the byte at the data pointer
+#. means to output the byte at the data pointer
+#, means to accept one byte of input, storing its value in the byte at the data pointer
+#[ means to jump forward to the command after the corresponding ] if the byte at the data pointer is zero
+#] means to jump back to the command after the corresponding [ if the byte at the data pointer is nonzero
+#the data pointer is a pointer to a byte in the data array
+#the data array is an array of bytes that starts with one byte initialized to 0
+#the code pointer is a pointer to the current command in the code
+#the interpreter runs until the code pointer reaches the end of the code
