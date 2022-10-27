@@ -1,0 +1,24 @@
+import socket
+import subprocess
+search = input("Enter you host ip addresse: ")
+
+def main():
+
+    print("Scanning host: " + search)
+    host = search
+    port = int(input("Enter port number: "))
+
+    s = socket.socket()
+    s.connect((host, port))
+    print("Port " + str(port) + " is open")
+    s.close()
+
+    if port == 0:
+        print("Port is closed")
+    else:
+        print("Port is open")
+
+
+
+if __name__ == '__main__':
+    main()
