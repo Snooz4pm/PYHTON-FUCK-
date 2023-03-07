@@ -1,0 +1,52 @@
+import os
+import subprocess
+
+#Define a function to compare files
+def compare_files(file1, file2):
+    #open the files
+    f1 = open(file1, 'rb')
+    f2 = open(file2, 'rb')
+
+    #read the contents
+    f1_data = f1.read()
+    f2_data = f2.read()
+
+    #check if the files are the same
+    if f1_data == f2_data:
+        return True
+    else:
+        return False
+
+#Define a function to scan for suspicious files
+def scan_files():
+    #get the list of files
+    file_list = os.listdir()
+
+    #compare the files against a known list of safe files
+    known_safe_files = ["safe_file1.exe", "safe_file2.exe"]
+    for file in file_list:
+        if file not in known_safe_files:
+            #if the file is not in the safe list, compare it against the known safe files
+            for safe_file in known_safe_files:
+                if compare_files(file, safe_file):
+                    #if the files are the same, alert the user
+                    print("Suspicious file found: " + file)
+
+#Define a function to scan for suspicious processes
+def scan_processes():
+    #get the list of running processes
+    process_list = subprocess.check_output(["tasklist"]).decode("utf-8").split("\n")
+
+    #compare the processes against a known list of safe processes
+    known_safe_processes = ["safe_process1.exe", "safe_process2.exe"]
+    for process in process_list:
+        if process not in known_safe_processes:
+            #if the process is not in the safe list, compare it against the known safe processes
+            for safe_process in known_safe_processes:
+                if compare_files(process, safe_process):
+                    #if the processes are the same, alert the user
+                    print("Suspicious process found: " + process)
+
+#Run the scan
+scan_files()
+scan_processes()
