@@ -1,0 +1,42 @@
+import sys
+import os
+import hashlib
+ 
+#declare a virus database
+virus_database = {
+    "a95f22e": "Trojan Horse",
+    "b1223d4": "Malware"
+}
+ 
+#define the main function
+def main():
+    #check for the virus
+    check_for_virus()
+ 
+def check_for_virus():
+    #list all the files in the directory
+    dir_contents = os.listdir()
+ 
+    #loop through the contents
+    for item in dir_contents:
+        #get the full path of the file
+        full_path = os.path.abspath(item)
+ 
+        #open the file
+        with open(full_path, 'rb') as f:
+            #read the file
+            file_data = f.read()
+ 
+            #generate the file hash
+            file_hash = hashlib.md5(file_data).hexdigest()
+ 
+            #check the virus database
+            if (file_hash in virus_database):
+                #print the virus name
+                print("Virus Detected: " + virus_database[file_hash])
+                #delete the virus
+                os.remove(full_path)
+ 
+#call the main function
+if __name__ == "__main__":
+    main()
