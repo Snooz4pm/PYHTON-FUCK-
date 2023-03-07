@@ -1,0 +1,30 @@
+alphabets = ['A', 'B', 'C', 'D', 'E', 'F',  'G', 'H', 'I', 'J', 'K','L','M',
+             'N','O', 'P','Q', 'R', 'S', 'T','U', 'V', 'W', 'X', 'Y', 'Z']
+cryptedata = {'A': 'E', 'B': 'F', 'C': 'G', 'D': 'H', 'E': 'I', 'F':'J',
+              'G': 'K', 'H': 'L', 'I': 'M', 'J': 'N', 'K': 'O', 'L': 'P',
+              'M': 'Q', 'N': 'R', 'O': 'S', 'P': 'T', 'Q': 'U', 'R': 'V',
+              'S': 'W', 'T': 'X', 'U': 'Y', 'V': 'Z', 'W': 'A', 'X': 'B',
+              'Y': 'C', 'Z': 'D'}
+
+def crypt(text):
+    crypted_text = ""
+    for alphabets in text:
+        if alphabets.upper() in cryptedata:
+            crypted_text += cryptedata[alphabets.upper()]
+            for alphabets in crypted_text:
+                crypted_text += cryptedata[alphabets.upper()]
+                for alphabets in crypted_text:
+                    crypted_text += cryptedata[alphabets.upper()]
+                    for alphabets in crypted_text:
+                        crypted_text += cryptedata[alphabets.upper()]
+                        return crypted_text
+            
+
+
+
+
+text = input("Enter text: ")
+print(crypt(text))
+
+
+
